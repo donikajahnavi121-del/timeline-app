@@ -157,8 +157,10 @@ body {
 
 /* WALLPAPER */
 #wallpaper {
-  position: absolute;
+  position: fixed;
   inset: 0;
+  width: 100vw;
+  height: 100dvh;
   z-index: 0;
   background: linear-gradient(
     135deg,
@@ -168,6 +170,9 @@ body {
     #c4826a 70%,
     #e8956d 100%
   );
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   transition: background 0.5s;
 }
 
