@@ -5,6 +5,20 @@
   padding: 0;
   box-sizing: border-box;
 }
+html {
+  height: 100%;
+  height: -webkit-fill-available;
+}
+
+body {
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  height: 100%;
+  position: fixed;
+  width: 100%;
+  overflow: hidden;
+  background: #000;
+}
 
 body {
   font-family: 'Inter', -apple-system, 'Helvetica Neue', sans-serif;
@@ -33,6 +47,8 @@ body {
   justify-content: center;
   gap: 40px;
   transition: opacity 1s ease;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 #pin-top {
@@ -116,6 +132,8 @@ body {
   cursor: pointer;
   user-select: none;
   overflow: hidden;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 /* WALLPAPER */
@@ -137,20 +155,21 @@ body {
 /* STATUS BAR */
 #status-bar {
   width: 100%;
-  height: 38px;
+  height: 50px;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: flex-end;
-  padding: 10px 14px 0 0;
+  padding: 0 14px 6px 0;
   z-index: 2;
   flex-shrink: 0;
   position: relative;
+  padding-top: env(safe-area-inset-top);
 }
 
 #status-right {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 7px;
 }
 
 /* CLOCK WRAP */
@@ -206,20 +225,22 @@ body {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.28);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  background: rgba(255, 255, 255, 0.01);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1.5px solid rgba(255, 255, 255, 0.5);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.1);
 }
 
 #torch-btn:active,
 #camera-btn:active {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.08);
 }
-
 /* HOME INDICATOR */
 #home-indicator {
   width: 134px;

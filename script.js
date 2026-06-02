@@ -400,7 +400,9 @@ document.addEventListener('DOMContentLoaded', () => {
         clearTimeout(homePressTimer);
         if (!targetShowing) return;
         targetShowing = false;
-        rollBackToIST();
+        setTimeout(() => {
+          rollBackToIST();
+        }, 3000);
       }
     });
   document.getElementById('screen-home')
@@ -421,7 +423,9 @@ document.addEventListener('DOMContentLoaded', () => {
         clearTimeout(homePressTimer);
         if (!targetShowing) return;
         targetShowing = false;
-        rollBackToIST();
+        setTimeout(() => {
+          rollBackToIST();
+        }, 3000);
       }
     });
   document.getElementById('screen-home')
