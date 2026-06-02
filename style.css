@@ -42,7 +42,6 @@ body {
   height: 100%;
   display: none;
   padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
 }
@@ -67,7 +66,7 @@ body {
   gap: 40px;
   transition: opacity 1s ease;
   padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
+  
 }
 
 #pin-top {
@@ -152,8 +151,7 @@ body {
   user-select: none;
   overflow: hidden;
   padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
-}
+  
 
 /* WALLPAPER */
 #wallpaper {
@@ -238,7 +236,13 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 40px 18px;
+  padding-left: 40px;
+  padding-right: 40px;
+  padding-bottom: 0;
+  position: absolute;
+  bottom: 12px;
+  left: 0;
+  right: 0;
   z-index: 2;
   flex-shrink: 0;
 }
