@@ -26,6 +26,8 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
+  margin: 0;
+  padding: 0;
   font-family: 'Inter', -apple-system, 'Helvetica Neue', sans-serif;
 }
 
@@ -52,8 +54,8 @@ body {
   justify-content: center;
   gap: 40px;
   transition: opacity 1s ease;
-  padding-top: max(env(safe-area-inset-top), 20px);
-  padding-bottom: max(env(safe-area-inset-bottom), 20px);
+  padding-top: max(env(safe-area-inset-top), 44px);
+  padding-bottom: max(env(safe-area-inset-bottom), 34px);
 }
 
 #pin-top {
@@ -136,16 +138,18 @@ body {
   user-select: none;
   overflow: hidden;
   padding-top: max(env(safe-area-inset-top), 44px);
-  padding-bottom: max(env(safe-area-inset-bottom), 20px);
+  padding-bottom: max(env(safe-area-inset-bottom), 34px);
 }
 
-/* WALLPAPER */
+/* WALLPAPER — covers full screen including safe areas */
 #wallpaper {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  position: fixed;
+  top: -50px;
+  left: -10px;
+  right: -10px;
+  bottom: -50px;
+  width: calc(100% + 20px);
+  height: calc(100% + 100px);
   z-index: 0;
   background: linear-gradient(
     135deg,
@@ -156,6 +160,8 @@ body {
     #e8956d 100%
   );
   transition: background 0.5s;
+  background-size: cover;
+  background-position: center;
 }
 
 /* STATUS BAR */
@@ -205,7 +211,7 @@ body {
   transition: color 0.3s, opacity 0.15s;
   font-family: 'Inter', -apple-system, 'Helvetica Neue', sans-serif;
   font-variant-numeric: tabular-nums;
-  text-shadow: 0 2px 20px rgba(0,0,0,0.2);
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
 }
 
 /* SPACER */
