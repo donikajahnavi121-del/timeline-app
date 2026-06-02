@@ -180,7 +180,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  padding: 0px 20px 0 0;
+  padding: 8px 30px 0 0;
   z-index: 2;
   flex-shrink: 0;
   position: relative;
@@ -199,10 +199,8 @@ body {
   align-items: center;
   gap: 0;
   z-index: 2;
-  padding-top: 0px;
+  padding-top: 20px;
   flex-shrink: 0;
-  transform:translateY(-15px);
-  margin-top:-20px;
 }
 
 #clock-date {
