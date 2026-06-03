@@ -22,10 +22,15 @@ const WALLPAPER_BOTTOM = {
   gradient7: '#1a0a00',
 };
 
-// Keep body background + meta theme-color in sync with wallpaper bottom color
-function syncBodyBackground(color) {
-  document.documentElement.style.background = color;
-  document.body.style.background = color;
+// Keep body/html background in sync with wallpaper so safe-area never shows black
+function syncBodyBackground(sel) {
+  const bg = WALLPAPERS[sel] || WALLPAPER_BOTTOM[sel] || '#000000';
+  document.documentElement.style.background = bg;
+  document.documentElement.style.backgroundAttachment = 'fixed';
+  document.body.style.background = bg;
+  document.body.style.backgroundAttachment = 'fixed';
+  // Also update theme-color to the bottom/end color of the wallpaper
+  const color = WALLPAPER_BOTTOM[sel] || '#000000';
   const meta = document.querySelector('meta[name="theme-color"]');
   if (meta) meta.setAttribute('content', color);
 }
@@ -86,7 +91,7 @@ function applyWallpaper() {
   if (sel === 'custom') {
     galleryRow.style.display = 'flex';
     // For custom photos use black as safe fallback
-    syncBodyBackground('#000000');
+    syncBodyBackground('gradient5');
   } else {
     galleryRow.style.display = 'none';
     const el = document.getElementById('wallpaper');
@@ -94,8 +99,8 @@ function applyWallpaper() {
     el.style.backgroundImage    = '';
     el.style.backgroundSize     = '';
     el.style.backgroundPosition = '';
-    // Sync body/safe-area to match wallpaper bottom color
-    syncBodyBackground(WALLPAPER_BOTTOM[sel] || '#000000');
+    // Sync body/html/safe-area to match wallpaper gradient
+    syncBodyBackground(sel);
   }
 }
 

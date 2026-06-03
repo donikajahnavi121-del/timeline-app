@@ -19,13 +19,16 @@
       padding: 0;
       width: 100%;
       height: 100%;
-      background: #e8956d;
+      background: linear-gradient(135deg,#1a3a6b 0%,#2d5a9e 20%,#7b6fa0 45%,#c4826a 70%,#e8956d 100%);
       overflow: hidden;
       position: fixed;
     }
   </style>
 </head>
 <body>
+
+  <!-- WALLPAPER — lives outside all screens so it's never clipped -->
+  <div id="wallpaper"></div>
 
   <!-- SCREEN 1 — PIN PAD -->
   <div id="screen-pin">
@@ -58,8 +61,6 @@
 
   <!-- SCREEN 2 — HOME SCREEN -->
   <div id="screen-home">
-
-    <div id="wallpaper"></div>
 
     <!-- STATUS BAR -->
     <div id="status-bar">
