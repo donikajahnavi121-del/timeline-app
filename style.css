@@ -157,10 +157,10 @@ body {
    ============================================== */
 #wallpaper {
   position: fixed;
-  top: 0;
+  top: -50;
   left: 0;
   right: 0;
-  bottom: -100px;
+  bottom: -50px;
   width: 100vw;
   min-height: calc(100vh + 100px);
   z-index: -1;
