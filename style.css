@@ -157,51 +157,31 @@ body {
    ============================================== */
 #wallpaper {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: -100px;
+  width: 100vw;
+  min-height: calc(100vh + 100px);
   z-index: -1;
-  /* Default: Deep Space — matches user's iPhone wallpaper */
   background:
-    /* Planet core glow */
     radial-gradient(ellipse 130px 150px at 53% 26%,
-      rgba(200, 230, 255, 0.95) 0%,
-      rgba(100, 170, 255, 0.85) 18%,
-      rgba(40, 100, 220, 0.65) 40%,
-      rgba(10, 50, 160, 0.3) 65%,
-      transparent 80%
-    ),
-    /* Planet atmosphere halo */
+      rgba(200,230,255,.95) 0%, rgba(100,170,255,.85) 18%,
+      rgba(40,100,220,.65) 40%, rgba(10,50,160,.3) 65%, transparent 80%),
     radial-gradient(ellipse 220px 240px at 53% 26%,
-      rgba(60, 120, 255, 0.35) 30%,
-      rgba(20, 60, 180, 0.2) 60%,
-      transparent 80%
-    ),
-    /* Milky way arc */
+      rgba(60,120,255,.35) 30%, rgba(20,60,180,.2) 60%, transparent 80%),
     radial-gradient(ellipse 500px 300px at 70% 18%,
-      rgba(30, 50, 120, 0.5) 0%,
-      rgba(10, 20, 80, 0.25) 50%,
-      transparent 75%
-    ),
-    /* Lower blue nebula / mountain ambient */
+      rgba(30,50,120,.5) 0%, rgba(10,20,80,.25) 50%, transparent 75%),
     radial-gradient(ellipse 400px 200px at 50% 78%,
-      rgba(10, 40, 100, 0.6) 0%,
-      rgba(5, 20, 60, 0.3) 55%,
-      transparent 80%
-    ),
-    /* Base sky */
+      rgba(10,40,100,.6) 0%, rgba(5,20,60,.3) 55%, transparent 80%),
     linear-gradient(180deg,
-      #000008 0%,
-      #000520 18%,
-      #000e35 35%,
-      #001245 48%,
-      #000e30 62%,
-      #000820 78%,
-      #000210 92%,
-      #000008 100%
-    );
+      #000008 0%, #000520 18%, #000e35 35%,
+      #001245 48%, #000e30 62%, #000820 78%,
+      #000210 92%, #000008 100%);
   background-size: cover;
+  background-position: center top;
   transition: background 0.5s ease;
 }
-
 /* STATUS BAR */
 #status-bar {
   width: 100%;
