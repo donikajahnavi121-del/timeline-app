@@ -19,17 +19,19 @@ function showScreen(id) {
 }
 
 // ── STATE ──
-let clockInterval   = null;
-let targetHour      = 9;
-let targetMin       = 41;
-let targetAmpm      = 'AM';
-let targetShowing   = false;
-let homePressTimer  = null;
-let isHomeLongPress = false;
-let pinPressTimer   = null;
-let isPinLongPress  = false;
+let clockInterval        = null;
+let offsetClockInterval  = null;
+let targetHour           = 9;
+let targetMin            = 41;
+let targetAmpm           = 'AM';
+let targetShowing        = false;
+let homePressTimer       = null;
+let isHomeLongPress      = false;
+let pinPressTimer        = null;
+let isPinLongPress       = false;
+let activeOffsetMinutes  = 0;
 
-// ── SAVE SETTINGS TO LOCALSTORAGE ──
+// ── SAVE SETTINGS ──
 function saveSettings() {
   const settings = {
     wallpaper:  document.getElementById('wallpaper-select').value,
@@ -43,49 +45,41 @@ function saveSettings() {
   localStorage.setItem('mindtrack-settings', JSON.stringify(settings));
 }
 
-// ── LOAD SETTINGS FROM LOCALSTORAGE ──
+// ── LOAD SETTINGS ──
 function loadSettings() {
   const saved = localStorage.getItem('mindtrack-settings');
   if (!saved) return;
-  const settings = JSON.parse(saved);
-
-  if (settings.wallpaper) {
-    document.getElementById('wallpaper-select').value = settings.wallpaper;
-  }
-  if (settings.clockColor) {
-    document.getElementById('clock-color').value = settings.clockColor;
-  }
-  if (settings.clockSize) {
-    document.getElementById('clock-size').value = settings.clockSize;
-  }
-  if (settings.direction) {
-    document.getElementById('tap-direction').value = settings.direction;
-  }
-  if (settings.unit) {
-    document.getElementById('tap-unit').value = settings.unit;
-  }
-  if (settings.speed) {
-    document.getElementById('anim-speed').value = settings.speed;
-  }
-  if (settings.trigger) {
-    document.getElementById('trigger-type').value = settings.trigger;
-  }
+  const s = JSON.parse(saved);
+  if (s.wallpaper)  document.getElementById('wallpaper-select').value = s.wallpaper;
+  if (s.clockColor) document.getElementById('clock-color').value      = s.clockColor;
+  if (s.clockSize)  document.getElementById('clock-size').value       = s.clockSize;
+  if (s.direction)  document.getElementById('tap-direction').value    = s.direction;
+  if (s.unit)       document.getElementById('tap-unit').value         = s.unit;
+  if (s.speed)      document.getElementById('anim-speed').value       = s.speed;
+  if (s.trigger)    document.getElementById('trigger-type').value     = s.trigger;
 }
 
 // ── APPLY SETTINGS ──
 function applyWallpaper() {
   const sel        = document.getElementById('wallpaper-select').value;
   const galleryRow = document.getElementById('gallery-row');
+  const el         = document.getElementById('wallpaper');
 
   if (sel === 'custom') {
     galleryRow.style.display = 'flex';
+    const savedCustomWp = localStorage.getItem('mindtrack-custom-wallpaper');
+    if (savedCustomWp) {
+      el.style.background         = 'none';
+      el.style.backgroundImage    = 'url(' + savedCustomWp + ')';
+      el.style.backgroundSize     = 'cover';
+      el.style.backgroundPosition = 'center';
+    }
   } else {
-    galleryRow.style.display = 'none';
-    const el = document.getElementById('wallpaper');
+    galleryRow.style.display    = 'none';
+    el.style.backgroundImage    = 'none';
     el.style.background         = WALLPAPERS[sel];
-    el.style.backgroundImage    = '';
-    el.style.backgroundSize     = '';
-    el.style.backgroundPosition = '';
+    el.style.backgroundSize     = 'cover';
+    el.style.backgroundPosition = 'center';
   }
 }
 
@@ -134,7 +128,9 @@ function startRealClockSaved() {
 
 function stopRealClock() {
   clearInterval(clockInterval);
-  clockInterval = null;
+  clearInterval(offsetClockInterval);
+  clockInterval       = null;
+  offsetClockInterval = null;
 }
 
 function updateRealClock() {
@@ -142,10 +138,8 @@ function updateRealClock() {
   let   h   = now.getHours();
   const m   = now.getMinutes();
   h = h % 12 || 12;
-
   document.getElementById('clock-time').textContent =
     h + ':' + String(m).padStart(2, '0');
-
   const days = [
     'Sunday','Monday','Tuesday','Wednesday',
     'Thursday','Friday','Saturday'
@@ -160,12 +154,46 @@ function updateRealClock() {
     now.getDate();
 }
 
+// ── OFFSET CLOCK ──
+function startOffsetClock(offsetMinutes) {
+  clearInterval(offsetClockInterval);
+  clearInterval(clockInterval);
+  clockInterval = null;
+
+  function tickOffset() {
+    const now       = new Date();
+    const istOffset = 5.5 * 60 * 60 * 1000;
+    const istNow    = new Date(now.getTime() + istOffset);
+    let totalMinutes = istNow.getUTCHours() * 60 + istNow.getUTCMinutes();
+    totalMinutes += offsetMinutes;
+    if (totalMinutes >= 24 * 60) totalMinutes -= 24 * 60;
+    if (totalMinutes < 0)        totalMinutes += 24 * 60;
+    let h  = Math.floor(totalMinutes / 60);
+    let m  = totalMinutes % 60;
+    const ap = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+    targetHour = h;
+    targetMin  = m;
+    targetAmpm = ap;
+    setDisplay(h, m);
+  }
+
+  tickOffset();
+  offsetClockInterval = setInterval(tickOffset, 1000);
+}
+
+function stopOffsetClock() {
+  clearInterval(offsetClockInterval);
+  offsetClockInterval = null;
+}
+
 // ── ROLL BACK ANIMATION ──
 function rollBackToIST() {
+  stopOffsetClock();
+
   const now       = new Date();
   const istOffset = 5.5 * 60 * 60 * 1000;
   const istNow    = new Date(now.getTime() + istOffset);
-
   let realH  = istNow.getUTCHours();
   let realM  = istNow.getUTCMinutes();
   let realAp = realH >= 12 ? 'PM' : 'AM';
@@ -174,25 +202,21 @@ function rollBackToIST() {
   const curTotal = toTotal(targetHour, targetMin, targetAmpm);
   const endTotal = toTotal(realH, realM, realAp);
 
-  // get speed
   const speedSetting = document.getElementById('anim-speed').value;
   const stepDelay    = speedSetting === 'slow' ? 1500
                      : speedSetting === 'fast' ? 400
                      : 1000;
 
-  // detect direction and roll opposite way back to IST
   const direction = document.getElementById('tap-direction').value;
   let diff          = 0;
   let rollDirection = 1;
 
   if (direction === 'forward') {
-    // time was moved forward so roll backward to IST
-    diff          = curTotal - endTotal;
+    diff = curTotal - endTotal;
     if (diff < 0) diff += 12 * 60;
     rollDirection = -1;
   } else {
-    // time was moved backward so roll forward to IST
-    diff          = endTotal - curTotal;
+    diff = endTotal - curTotal;
     if (diff < 0) diff += 12 * 60;
     rollDirection = 1;
   }
@@ -207,131 +231,88 @@ function rollBackToIST() {
 
   const anim = setInterval(() => {
     step++;
-
     if (step >= diff) {
       clearInterval(anim);
       setDisplay(realH, realM);
       setTimeout(() => {
+        activeOffsetMinutes = 0;
         startRealClockSaved();
       }, 600);
       return;
     }
-
     let newTotal = curTotal + (step * rollDirection);
     if (newTotal >= 12 * 60) newTotal -= 12 * 60;
     if (newTotal < 0)        newTotal += 12 * 60;
-
     const { h, m } = fromTotal(newTotal);
     setDisplay(h, m);
-
     clockEl.style.opacity = '0.4';
     setTimeout(() => {
       clockEl.style.opacity = '1';
     }, stepDelay / 2);
-
   }, stepDelay);
 }
 
 // ── APP START ──
 document.addEventListener('DOMContentLoaded', () => {
 
-  // show pin screen
   showScreen('screen-pin');
   document.getElementById('screen-pin').style.opacity = '1';
 
-  // after 1 second fade pin pad
   setTimeout(() => {
     document.getElementById('screen-pin').style.opacity = '0.15';
   }, 1000);
 
-  // load saved settings then apply
   loadSettings();
   applyAllSettings();
+
+  const savedCustomWp = localStorage.getItem('mindtrack-custom-wallpaper');
+  const savedSettings = localStorage.getItem('mindtrack-settings');
+  if (savedCustomWp && savedSettings) {
+    const s = JSON.parse(savedSettings);
+    if (s.wallpaper === 'custom') {
+      const el = document.getElementById('wallpaper');
+      el.style.background         = 'none';
+      el.style.backgroundImage    = 'url(' + savedCustomWp + ')';
+      el.style.backgroundSize     = 'cover';
+      el.style.backgroundPosition = 'center';
+    }
+  }
 
   // ── PIN BUTTONS ──
   document.querySelectorAll('.pin-btn[data-num]').forEach(btn => {
     btn.addEventListener('click', () => {
-
       const num       = parseInt(btn.getAttribute('data-num'));
       const direction = document.getElementById('tap-direction').value;
       const unit      = document.getElementById('tap-unit').value;
 
-      // get real IST
-      const now       = new Date();
-      const istOffset = 5.5 * 60 * 60 * 1000;
-      const istTime   = new Date(now.getTime() + istOffset);
-      let totalMinutes =
-        istTime.getUTCHours() * 60 + istTime.getUTCMinutes();
+      let offsetMinutes = unit === 'hours' ? num * 60 : num;
+      if (direction === 'backward') offsetMinutes = -offsetMinutes;
+      activeOffsetMinutes = offsetMinutes;
 
-      // apply direction
-      if (unit === 'minutes') {
-        totalMinutes = direction === 'forward'
-          ? totalMinutes + num
-          : totalMinutes - num;
-      } else {
-        totalMinutes = direction === 'forward'
-          ? totalMinutes + (num * 60)
-          : totalMinutes - (num * 60);
-      }
-
-      // overflow fix
-      if (totalMinutes >= 24 * 60) totalMinutes -= 24 * 60;
-      if (totalMinutes < 0)        totalMinutes += 24 * 60;
-
-      // convert to 12hr
-      let h  = Math.floor(totalMinutes / 60);
-      let m  = totalMinutes % 60;
-      let ap = h >= 12 ? 'PM' : 'AM';
-      h = h % 12 || 12;
-
-      targetHour = h;
-      targetMin  = m;
-      targetAmpm = ap;
-
-      // vibrate if set
       const triggerType = document.getElementById('trigger-type').value;
       if (triggerType === 'tap-vibrate') {
         if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
       }
 
-      // stop real clock
       stopRealClock();
 
-      // show adjusted time
-      setDisplay(targetHour, targetMin);
-
-      // update date
       const now2   = new Date();
-      const days   = [
-        'Sunday','Monday','Tuesday','Wednesday',
-        'Thursday','Friday','Saturday'
-      ];
-      const months = [
-        'January','February','March','April','May','June',
-        'July','August','September','October','November','December'
-      ];
+      const days   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+      const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
       document.getElementById('clock-date').textContent =
         days[now2.getDay()] + ', ' +
         months[now2.getMonth()] + ' ' +
         now2.getDate();
 
       targetShowing = true;
-
-      // apply all settings before showing home
       applyAllSettings();
-
-      // reset pin opacity
       document.getElementById('screen-pin').style.opacity = '1';
-
-      // show home screen
       showScreen('screen-home');
+      startOffsetClock(activeOffsetMinutes);
 
-      // update status text
       document.getElementById('status-text').textContent =
         '✦ IST ' + (direction === 'forward' ? '+' : '-') +
-        num + ' ' + unit +
-        ' → ' + h + ':' +
-        String(m).padStart(2, '0') + ' ' + ap;
+        num + ' ' + unit;
     });
   });
 
@@ -378,7 +359,9 @@ document.addEventListener('DOMContentLoaded', () => {
         clearTimeout(homePressTimer);
         if (!targetShowing) return;
         targetShowing = false;
-        rollBackToIST();
+        setTimeout(() => {
+          rollBackToIST();
+        }, 3000);
       }
     });
   document.getElementById('screen-home')
@@ -399,7 +382,9 @@ document.addEventListener('DOMContentLoaded', () => {
         clearTimeout(homePressTimer);
         if (!targetShowing) return;
         targetShowing = false;
-        rollBackToIST();
+        setTimeout(() => {
+          rollBackToIST();
+        }, 3000);
       }
     });
   document.getElementById('screen-home')
@@ -422,20 +407,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ── LIVE SETTINGS CHANGE + SAVE ──
   document.getElementById('wallpaper-select')
-    .addEventListener('change', () => {
-      applyWallpaper();
-      saveSettings();
-    });
+    .addEventListener('change', () => { applyWallpaper(); saveSettings(); });
   document.getElementById('clock-color')
-    .addEventListener('change', () => {
-      applyClockColor();
-      saveSettings();
-    });
+    .addEventListener('change', () => { applyClockColor(); saveSettings(); });
   document.getElementById('clock-size')
-    .addEventListener('change', () => {
-      applyClockSize();
-      saveSettings();
-    });
+    .addEventListener('change', () => { applyClockSize(); saveSettings(); });
   document.getElementById('tap-direction')
     .addEventListener('change', saveSettings);
   document.getElementById('tap-unit')
@@ -450,7 +426,6 @@ document.addEventListener('DOMContentLoaded', () => {
     .addEventListener('click', () => {
       document.getElementById('gallery-input').click();
     });
-
   document.getElementById('gallery-input')
     .addEventListener('change', (e) => {
       const file = e.target.files[0];
@@ -463,24 +438,9 @@ document.addEventListener('DOMContentLoaded', () => {
         el.style.backgroundImage    = 'url(' + img + ')';
         el.style.backgroundSize     = 'cover';
         el.style.backgroundPosition = 'center';
-        // save custom image to localstorage
         localStorage.setItem('mindtrack-custom-wallpaper', img);
       };
       reader.readAsDataURL(file);
     });
-
-  // load custom wallpaper if saved
-  const savedCustomWp = localStorage.getItem('mindtrack-custom-wallpaper');
-  const savedSettings = localStorage.getItem('mindtrack-settings');
-  if (savedCustomWp && savedSettings) {
-    const s = JSON.parse(savedSettings);
-    if (s.wallpaper === 'custom') {
-      const el = document.getElementById('wallpaper');
-      el.style.background         = 'none';
-      el.style.backgroundImage    = 'url(' + savedCustomWp + ')';
-      el.style.backgroundSize     = 'cover';
-      el.style.backgroundPosition = 'center';
-    }
-  }
 
 });
