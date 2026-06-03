@@ -10,6 +10,26 @@ const WALLPAPERS = {
   gradient7: 'linear-gradient(160deg,#2b1a0a,#3d1f0d,#1a0a00)',
 };
 
+// Bottom/end color for each wallpaper — used to fill the safe-area so no black bar shows
+const WALLPAPER_BOTTOM = {
+  ios:       '#e8956d',
+  gradient1: '#24243e',
+  gradient2: '#0a1628',
+  gradient3: '#0a2010',
+  gradient4: '#200a0a',
+  gradient5: '#000000',
+  gradient6: '#0a2040',
+  gradient7: '#1a0a00',
+};
+
+// Keep body background + meta theme-color in sync with wallpaper bottom color
+function syncBodyBackground(color) {
+  document.documentElement.style.background = color;
+  document.body.style.background = color;
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', color);
+}
+
 // ── SCREEN MANAGER ──
 function showScreen(id) {
   document.getElementById('screen-pin').style.display    = 'none';
@@ -65,6 +85,8 @@ function applyWallpaper() {
   const galleryRow = document.getElementById('gallery-row');
   if (sel === 'custom') {
     galleryRow.style.display = 'flex';
+    // For custom photos use black as safe fallback
+    syncBodyBackground('#000000');
   } else {
     galleryRow.style.display = 'none';
     const el = document.getElementById('wallpaper');
@@ -72,6 +94,8 @@ function applyWallpaper() {
     el.style.backgroundImage    = '';
     el.style.backgroundSize     = '';
     el.style.backgroundPosition = '';
+    // Sync body/safe-area to match wallpaper bottom color
+    syncBodyBackground(WALLPAPER_BOTTOM[sel] || '#000000');
   }
 }
 
