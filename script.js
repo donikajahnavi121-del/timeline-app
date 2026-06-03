@@ -50,15 +50,25 @@ const WALLPAPER_EDGE = {
 // Setting it here is the definitive, only fix.
 // ==============================================
 function syncBodyBackground(sel) {
-  const edgeColor = WALLPAPER_EDGE[sel] || '#000008';
+  let bg = '#000000';
+  if (sel === 'custom') {
+    const savedCustomWp = localStorage.getItem('mindtrack-custom-wallpaper');
+    bg = savedCustomWp ? `url(${savedCustomWp})` : '#000000';
+  } else {
+    bg = WALLPAPERS[sel] || '#000000';
+  }
 
-  // 1. html background — fills safe area zones on iOS
-  document.documentElement.style.background = edgeColor;
+  // 1. html background — set to the actual wallpaper (gradient or image)
+  document.documentElement.style.background = bg;
+  document.documentElement.style.backgroundSize = 'cover';
+  document.documentElement.style.backgroundPosition = 'center';
+  document.documentElement.style.backgroundAttachment = 'fixed';
 
-  // 2. body — transparent so html bg shows through safe areas
+  // 2. body — transparent so html bg shows through
   document.body.style.background = 'transparent';
 
   // 3. theme-color meta — affects browser chrome on Android / PWA
+  const edgeColor = WALLPAPER_EDGE[sel] || '#000000';
   const meta = document.querySelector('meta[name="theme-color"]');
   if (meta) meta.setAttribute('content', edgeColor);
 }
@@ -120,7 +130,16 @@ function applyWallpaper() {
 
   if (sel === 'custom') {
     galleryRow.style.display = 'flex';
-    syncBodyBackground('gradient5'); // dark safe-area for custom photos
+    const savedCustomWp = localStorage.getItem('mindtrack-custom-wallpaper');
+    if (savedCustomWp) {
+      el.style.background = 'none';
+      el.style.backgroundImage = 'url(' + savedCustomWp + ')';
+      el.style.backgroundSize = 'cover';
+      el.style.backgroundPosition = 'center';
+    } else {
+      el.style.background = '#000000';
+    }
+    syncBodyBackground('custom');
   } else {
     galleryRow.style.display = 'none';
     // Reset any previous image wallpaper first
