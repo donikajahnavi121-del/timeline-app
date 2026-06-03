@@ -1,6 +1,23 @@
-// ── WALLPAPERS ──
+// ==============================================
+// WALLPAPER DEFINITIONS
+// ==============================================
+
+const SPACE_BG = [
+  'radial-gradient(ellipse 130px 150px at 53% 26%,',
+  '  rgba(200,230,255,.95) 0%, rgba(100,170,255,.85) 18%,',
+  '  rgba(40,100,220,.65) 40%, rgba(10,50,160,.3) 65%, transparent 80%),',
+  'radial-gradient(ellipse 220px 240px at 53% 26%,',
+  '  rgba(60,120,255,.35) 30%, rgba(20,60,180,.2) 60%, transparent 80%),',
+  'radial-gradient(ellipse 500px 300px at 70% 18%,',
+  '  rgba(30,50,120,.5) 0%, rgba(10,20,80,.25) 50%, transparent 75%),',
+  'radial-gradient(ellipse 400px 200px at 50% 78%,',
+  '  rgba(10,40,100,.6) 0%, rgba(5,20,60,.3) 55%, transparent 80%),',
+  'linear-gradient(180deg,#000008 0%,#000520 18%,',
+  '  #000e35 35%,#001245 48%,#000e30 62%,#000820 78%,#000210 92%,#000008 100%)'
+].join('');
+
 const WALLPAPERS = {
-  ios:       'linear-gradient(135deg,#1a3a6b 0%,#2d5a9e 20%,#7b6fa0 45%,#c4826a 70%,#e8956d 100%)',
+  ios:       SPACE_BG,
   gradient1: 'linear-gradient(160deg,#0f0c29,#302b63,#24243e)',
   gradient2: 'linear-gradient(160deg,#0d1b2a,#1b2838,#0a1628)',
   gradient3: 'linear-gradient(160deg,#0a1a0a,#0d2b1a,#0a2010)',
@@ -8,31 +25,42 @@ const WALLPAPERS = {
   gradient5: '#000000',
   gradient6: 'linear-gradient(160deg,#0a1628,#0d2b4a,#0a2040)',
   gradient7: 'linear-gradient(160deg,#2b1a0a,#3d1f0d,#1a0a00)',
+  sunset:    'linear-gradient(135deg,#1a3a6b 0%,#2d5a9e 20%,#7b6fa0 45%,#c4826a 70%,#e8956d 100%)',
 };
 
-// Bottom/end color for each wallpaper — used to fill the safe-area so no black bar shows
-const WALLPAPER_BOTTOM = {
-  ios:       '#e8956d',
-  gradient1: '#24243e',
-  gradient2: '#0a1628',
-  gradient3: '#0a2010',
-  gradient4: '#200a0a',
+// The darkest EDGE color of each wallpaper.
+// This is what fills the iPhone safe-area zones.
+// Must match the very bottom/top-left of the gradient.
+const WALLPAPER_EDGE = {
+  ios:       '#000008',
+  gradient1: '#0f0c29',
+  gradient2: '#0d1b2a',
+  gradient3: '#0a1a0a',
+  gradient4: '#1a0a0a',
   gradient5: '#000000',
-  gradient6: '#0a2040',
-  gradient7: '#1a0a00',
+  gradient6: '#0a1628',
+  gradient7: '#2b1a0a',
+  sunset:    '#1a3a6b',
 };
 
-// Keep body/html background in sync with wallpaper so safe-area never shows black
+// ==============================================
+// SAFE AREA SYNC
+// KEY INSIGHT: On iOS, ONLY the <html> element’s
+// background color fills the safe area zones.
+// Setting it here is the definitive, only fix.
+// ==============================================
 function syncBodyBackground(sel) {
-  const bg = WALLPAPERS[sel] || WALLPAPER_BOTTOM[sel] || '#000000';
-  document.documentElement.style.background = bg;
-  document.documentElement.style.backgroundAttachment = 'fixed';
-  document.body.style.background = bg;
-  document.body.style.backgroundAttachment = 'fixed';
-  // Also update theme-color to the bottom/end color of the wallpaper
-  const color = WALLPAPER_BOTTOM[sel] || '#000000';
+  const edgeColor = WALLPAPER_EDGE[sel] || '#000008';
+
+  // 1. html background — fills safe area zones on iOS
+  document.documentElement.style.background = edgeColor;
+
+  // 2. body — transparent so html bg shows through safe areas
+  document.body.style.background = 'transparent';
+
+  // 3. theme-color meta — affects browser chrome on Android / PWA
   const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.setAttribute('content', color);
+  if (meta) meta.setAttribute('content', edgeColor);
 }
 
 // ── SCREEN MANAGER ──
@@ -88,18 +116,20 @@ function loadSettings() {
 function applyWallpaper() {
   const sel        = document.getElementById('wallpaper-select').value;
   const galleryRow = document.getElementById('gallery-row');
+  const el         = document.getElementById('wallpaper');
+
   if (sel === 'custom') {
     galleryRow.style.display = 'flex';
-    // For custom photos use black as safe fallback
-    syncBodyBackground('gradient5');
+    syncBodyBackground('gradient5'); // dark safe-area for custom photos
   } else {
     galleryRow.style.display = 'none';
-    const el = document.getElementById('wallpaper');
-    el.style.background         = WALLPAPERS[sel];
-    el.style.backgroundImage    = '';
-    el.style.backgroundSize     = '';
-    el.style.backgroundPosition = '';
-    // Sync body/html/safe-area to match wallpaper gradient
+    // Reset any previous image wallpaper first
+    el.style.backgroundImage    = 'none';
+    el.style.backgroundSize     = 'cover';
+    el.style.backgroundPosition = 'center';
+    // Apply the CSS gradient (must set via cssText or direct property)
+    el.style.background = WALLPAPERS[sel];
+    // Sync <html> bg to match wallpaper darkest edge — fills safe areas
     syncBodyBackground(sel);
   }
 }

@@ -9,36 +9,36 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+/* ==============================================
+   FOUNDATION
+   html bg is the ONLY thing iOS uses to paint
+   the safe-area zones — always match wallpaper edge.
+   Never put position:fixed or overflow:hidden here.
+   ============================================== */
 html {
-  width: 100%;
-  height: 100%;
-  height: -webkit-fill-available;
-  background: linear-gradient(135deg,#1a3a6b 0%,#2d5a9e 20%,#7b6fa0 45%,#c4826a 70%,#e8956d 100%);
-  background-attachment: fixed;
-  overflow: hidden;
+  /* Matches space wallpaper darkest edge — safe areas will be seamless */
+  background: #000008;
 }
 
 body {
-  height: 100%;
-  width: 100%;
-  min-height: 100dvh;
-  background: linear-gradient(135deg,#1a3a6b 0%,#2d5a9e 20%,#7b6fa0 45%,#c4826a 70%,#e8956d 100%);
-  background-attachment: fixed;
-  overflow: hidden;
   margin: 0;
-  padding-top: 0;
   font-family: 'Inter', -apple-system, 'Helvetica Neue', sans-serif;
-  overscroll-behaviour: none;
+  overscroll-behavior: none;        /* prevents bounce scroll */
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
-/* ── ALL SCREENS ── */
+/* ==============================================
+   SCREENS
+   position:fixed + inset:0 covers the FULL screen
+   including safe areas when viewport-fit=cover.
+   Do NOT add height:100dvh — it conflicts with inset.
+   ============================================== */
 #screen-pin,
 #screen-home,
 #screen-secret {
   position: fixed;
   inset: 0;
-  width: 100vw;
-  height: 100dvh;
   display: none;
   flex-direction: column;
 }
@@ -130,35 +130,68 @@ body {
 
 /* ── SCREEN 2 HOME ── */
 #screen-home {
-  z-index: 100;
+  z-index: 10;
   flex-direction: column;
   align-items: stretch;
   justify-content: flex-start;
   cursor: pointer;
   user-select: none;
   background: transparent;
+  /* Safe area: push content above home indicator */
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* WALLPAPER — direct child of body, never clipped */
+/* ==============================================
+   WALLPAPER
+   Direct child of <body> — never inside a screen.
+   position:fixed + inset:0 covers the full screen
+   including safe areas. z-index:-1 puts it behind all.
+   ============================================== */
 #wallpaper {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   z-index: -1;
-  background: linear-gradient(
-    135deg,
-    #1a3a6b 0%,
-    #2d5a9e 20%,
-    #7b6fa0 45%,
-    #c4826a 70%,
-    #e8956d 100%
-  );
-  transition: background 0.5s;
+  /* Default: Deep Space — matches user's iPhone wallpaper */
+  background:
+    /* Planet core glow */
+    radial-gradient(ellipse 130px 150px at 53% 26%,
+      rgba(200, 230, 255, 0.95) 0%,
+      rgba(100, 170, 255, 0.85) 18%,
+      rgba(40, 100, 220, 0.65) 40%,
+      rgba(10, 50, 160, 0.3) 65%,
+      transparent 80%
+    ),
+    /* Planet atmosphere halo */
+    radial-gradient(ellipse 220px 240px at 53% 26%,
+      rgba(60, 120, 255, 0.35) 30%,
+      rgba(20, 60, 180, 0.2) 60%,
+      transparent 80%
+    ),
+    /* Milky way arc */
+    radial-gradient(ellipse 500px 300px at 70% 18%,
+      rgba(30, 50, 120, 0.5) 0%,
+      rgba(10, 20, 80, 0.25) 50%,
+      transparent 75%
+    ),
+    /* Lower blue nebula / mountain ambient */
+    radial-gradient(ellipse 400px 200px at 50% 78%,
+      rgba(10, 40, 100, 0.6) 0%,
+      rgba(5, 20, 60, 0.3) 55%,
+      transparent 80%
+    ),
+    /* Base sky */
+    linear-gradient(180deg,
+      #000008 0%,
+      #000520 18%,
+      #000e35 35%,
+      #001245 48%,
+      #000e30 62%,
+      #000820 78%,
+      #000210 92%,
+      #000008 100%
+    );
+  background-size: cover;
+  transition: background 0.5s ease;
 }
 
 /* STATUS BAR */

@@ -6,7 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="theme-color" content="#e8956d">
+  <meta name="theme-color" content="#000008">
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-title" content="Clock">
@@ -14,14 +14,14 @@
   <title>Clock</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(135deg,#1a3a6b 0%,#2d5a9e 20%,#7b6fa0 45%,#c4826a 70%,#e8956d 100%);
-      overflow: hidden;
-      position: fixed;
+    /*
+     * CRITICAL iOS safe-area fix:
+     * Only the <html> background bleeds into safe areas on iOS.
+     * Set it to match the darkest edge of the wallpaper.
+     * Do NOT use position:fixed or overflow:hidden on body — it breaks safe area rendering.
+     */
+    html {
+      background: #000008;
     }
   </style>
 </head>
@@ -131,14 +131,15 @@
         <div class="secret-row">
           <label>Wallpaper</label>
           <select id="wallpaper-select">
-            <option value="ios">iOS Default</option>
+            <option value="ios">Deep Space</option>
+            <option value="sunset">Sunset</option>
             <option value="gradient1">Deep Purple</option>
             <option value="gradient2">Midnight Blue</option>
             <option value="gradient3">Dark Green</option>
             <option value="gradient4">Deep Red</option>
             <option value="gradient5">Pure Black</option>
             <option value="gradient6">Ocean Blue</option>
-            <option value="gradient7">Sunset</option>
+            <option value="gradient7">Dark Ember</option>
             <option value="custom">Custom Photo</option>
           </select>
         </div>
