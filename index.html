@@ -6,29 +6,20 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="theme-color" content="#000008">
+  <meta name="theme-color" content="#e8956d">
+  <meta name="apple-touch-fullscreen" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Clock">
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icon-192.png">
-<meta name="apple-mobile-web-app-title" content="Clock">
-  <meta name="apple-touch-fullscreen" content="yes">
   <title>Clock</title>
-  <link rel="stylesheet" href="style.css?v=2">
+  <link rel="stylesheet" href="style.css">
   <style>
-    /*
-     * CRITICAL iOS safe-area fix:
-     * Only the <html> background bleeds into safe areas on iOS.
-     * Set it to match the darkest edge of the wallpaper.
-     * Do NOT use position:fixed or overflow:hidden on body — it breaks safe area rendering.
-     */
-    html,body {
-      background-color: #000000;
+    html, body {
+      background: #e8956d !important;
     }
   </style>
 </head>
 <body>
-
-  <!-- WALLPAPER — lives outside all screens so it's never clipped -->
-  <div id="wallpaper"></div>
 
   <!-- SCREEN 1 — PIN PAD -->
   <div id="screen-pin">
@@ -62,7 +53,8 @@
   <!-- SCREEN 2 — HOME SCREEN -->
   <div id="screen-home">
 
-    <!-- STATUS BAR -->
+    <div id="wallpaper"></div>
+
     <div id="status-bar">
       <div id="status-right">
         <svg width="22" height="16" viewBox="0 0 19 12">
@@ -84,7 +76,6 @@
       </div>
     </div>
 
-    <!-- DATE AND TIME -->
     <div id="clock-wrap">
       <div id="clock-date">Monday, June 10</div>
       <div id="clock-time">9:41</div>
@@ -92,26 +83,24 @@
 
     <div id="spacer"></div>
 
-    <!-- BOTTOM BUTTONS -->
     <div id="bottom-bar">
       <div id="torch-btn">
         <svg width="20" height="26" viewBox="0 0 20 34" fill="white">
-          <!-- head top flat -->
           <rect x="2" y="0" width="16" height="3" rx="1.5" fill="white"/>
-          <!-- trapezoid body top -->
           <path d="M2 3 L4 10 L16 10 L18 3 Z" fill="white"/>
-          <!-- handle body -->
           <rect x="5" y="10" width="10" height="18" rx="2" fill="white"/>
-          <!-- button on handle -->
           <rect x="8" y="16" width="4" height="4" rx="1" fill="#000"/>
-          <!-- bottom cap -->
           <rect x="5" y="28" width="10" height="4" rx="2" fill="white"/>
         </svg>
       </div>
       <div id="camera-btn">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8">
-          <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
-          <circle cx="12" cy="13" r="4"/>
+        <svg width="24" height="20" viewBox="0 0 24 20" fill="white">
+          <rect x="1" y="4" width="22" height="15" rx="3" fill="white"/>
+          <path d="M8 4 L8 2 Q8 1 9 1 L15 1 Q16 1 16 2 L16 4 Z" fill="white"/>
+          <circle cx="12" cy="11.5" r="5" fill="white"/>
+          <circle cx="12" cy="11.5" r="3.8" fill="rgba(0,0,0,0.55)"/>
+          <circle cx="12" cy="11.5" r="2.2" fill="white" opacity="0.15"/>
+          <circle cx="4.5" cy="7" r="1" fill="rgba(0,0,0,0.4)"/>
         </svg>
       </div>
     </div>
@@ -131,23 +120,20 @@
         <div class="secret-row">
           <label>Wallpaper</label>
           <select id="wallpaper-select">
-            <option value="ios">Deep Space</option>
-            <option value="sunset">Sunset</option>
+            <option value="ios">iOS Default</option>
             <option value="gradient1">Deep Purple</option>
             <option value="gradient2">Midnight Blue</option>
             <option value="gradient3">Dark Green</option>
             <option value="gradient4">Deep Red</option>
             <option value="gradient5">Pure Black</option>
             <option value="gradient6">Ocean Blue</option>
-            <option value="gradient7">Dark Ember</option>
+            <option value="gradient7">Sunset</option>
             <option value="custom">Custom Photo</option>
           </select>
         </div>
-
         <div class="secret-row" id="gallery-row" style="display:none">
           <label>Choose Photo</label>
-          <input type="file" id="gallery-input" accept="image/*"
-            style="display:none"/>
+          <input type="file" id="gallery-input" accept="image/*" style="display:none"/>
           <button id="gallery-btn">Open Gallery</button>
         </div>
         <div class="secret-row">
@@ -205,20 +191,18 @@
       </div>
 
       <div id="status-text">Not set</div>
-      <div style="text-align: center; color: #555; font-size: 11px; margin: 4px 0 12px; font-family: sans-serif;">v2.0</div>
       <button id="close-secret-btn">Close Settings</button>
 
     </div>
   </div>
 
-  <script src="script.js?v=2"></script>
-
-<script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./service-worker.js')
-    .then(() => console.log('Service Worker Registered'));
-}
-</script>
+  <script src="script.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./service-worker.js')
+        .then(() => console.log('Service Worker Registered'));
+    }
+  </script>
 
 </body>
 </html>
