@@ -1,55 +1,31 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700&display=swap');
-
-*,
-*::before,
-*::after {
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
-}
-
-html {
-  width: 100%;
-  height: 100%;
-  background: #e8956d;
-  overflow: hidden;
 }
 
 body {
-  width: 100%;
-  height: 100%;
-  background: #e8956d;
+  font-family: -apple-system, 'SF Pro Display', sans-serif;
+  background: #000;
+  height: 100vh;
   overflow: hidden;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  margin: 0;
-  padding: 0;
-  font-family: 'Inter', -apple-system, 'Helvetica Neue', sans-serif;
 }
 
-/* ── ALL SCREENS ── */
 #screen-pin,
 #screen-home,
 #screen-secret {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
   display: none;
-  flex-direction: column;
 }
 
 /* ── SCREEN 1 PIN PAD ── */
 #screen-pin {
   background: #000;
   z-index: 100;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 40px;
@@ -68,7 +44,6 @@ body {
   font-weight: 400;
   color: #fff;
   letter-spacing: 0.5px;
-  font-family: 'Inter', sans-serif;
 }
 
 #pin-dots {
@@ -109,11 +84,11 @@ body {
   user-select: none;
   position: relative;
   z-index: 999;
-  font-family: 'Inter', sans-serif;
 }
 
 .pin-btn:hover {
   background: rgba(255, 255, 255, 0.25);
+  cursor: pointer;
 }
 
 .pin-btn:active {
@@ -130,19 +105,18 @@ body {
 /* ── SCREEN 2 HOME ── */
 #screen-home {
   z-index: 100;
+  flex-direction: column;
   align-items: stretch;
   justify-content: flex-start;
   cursor: pointer;
   user-select: none;
   overflow: hidden;
-  background: transparent;
 }
 
-/* WALLPAPER */
 #wallpaper {
-  position: fixed;
+  position: absolute;
   inset: 0;
-  z-index: -1;
+  z-index: 0;
   background: linear-gradient(
     135deg,
     #1a3a6b 0%,
@@ -151,19 +125,17 @@ body {
     #c4826a 70%,
     #e8956d 100%
   );
-  background-size: cover;
-  background-position: center;
-  transition: background 0.5s ease;
+  transition: background 0.5s;
 }
 
 /* STATUS BAR */
 #status-bar {
   width: 100%;
-  height: 44px;
+  height: 38px;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: flex-end;
-  padding: 0 16px 6px 0;
+  padding: 10px 14px 0 0;
   z-index: 2;
   flex-shrink: 0;
   position: relative;
@@ -172,9 +144,8 @@ body {
 #status-right {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
-
 /* CLOCK WRAP */
 #clock-wrap {
   display: flex;
@@ -182,7 +153,7 @@ body {
   align-items: center;
   gap: 0;
   z-index: 2;
-  padding-top: 10px;
+  padding-top: 14px;
   flex-shrink: 0;
 }
 
@@ -190,23 +161,19 @@ body {
   font-size: 17px;
   color: rgba(255, 255, 255, 0.92);
   font-weight: 400;
-  letter-spacing: 0.2px;
-  font-family: 'Inter', -apple-system, 'Helvetica Neue', sans-serif;
+  letter-spacing: 0.1px;
 }
 
 #clock-time {
-  font-size: 90px;
-  font-weight: 600;
+  font-size: 86px;
+  font-weight: 200;
   color: #ffffff;
-  letter-spacing: -3px;
+  letter-spacing: -2px;
   line-height: 1.05;
   transition: color 0.3s, opacity 0.15s;
-  font-family: 'Inter', -apple-system, 'Helvetica Neue', sans-serif;
-  font-variant-numeric: tabular-nums;
-  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+  text-shadow: 0 1px 12px rgba(0,0,0,0.15);
 }
 
-/* SPACER */
 #spacer {
   flex: 1;
   z-index: 1;
@@ -218,31 +185,28 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 40px 30px;
+  padding: 0 40px 18px;
   z-index: 2;
   flex-shrink: 0;
 }
 
 #torch-btn,
 #camera-btn {
-  width: 52px;
-  height: 52px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(12px) saturate(150%);
-  -webkit-backdrop-filter: blur(12px) saturate(150%);
+  background: rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   display: flex;
   align-items: center;
   justify-content: center;
-  border: none;
-  box-shadow:
-    0 2px 12px rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 #torch-btn:active,
 #camera-btn:active {
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(255, 255, 255, 0.25);
 }
 
 /* HOME INDICATOR */
@@ -255,12 +219,12 @@ body {
   z-index: 2;
   flex-shrink: 0;
 }
-
 /* ── SCREEN 3 SECRET PANEL ── */
 #screen-secret {
   background: #0a0a0a;
   z-index: 200;
   overflow-y: auto;
+  flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   padding: 20px 0 40px;
@@ -283,7 +247,6 @@ body {
   text-align: center;
   letter-spacing: 1px;
   padding: 10px 0;
-  font-family: 'Inter', sans-serif;
 }
 
 .settings-section {
@@ -301,7 +264,6 @@ body {
   font-weight: 600;
   padding: 12px 16px 8px;
   border-bottom: 1px solid #1e1e1e;
-  font-family: 'Inter', sans-serif;
 }
 
 .secret-row {
@@ -319,7 +281,6 @@ body {
 .secret-row label {
   font-size: 15px;
   color: #ccc;
-  font-family: 'Inter', sans-serif;
 }
 
 .secret-row select {
@@ -332,7 +293,6 @@ body {
   width: 140px;
   text-align: center;
   cursor: pointer;
-  font-family: 'Inter', sans-serif;
 }
 
 #status-text {
@@ -357,14 +317,12 @@ body {
   cursor: pointer;
   width: 100%;
   transition: all 0.15s;
-  font-family: 'Inter', sans-serif;
 }
 
 #close-secret-btn:hover {
   background: #222;
   color: #fff;
 }
-
 #gallery-btn {
   padding: 8px 16px;
   border-radius: 8px;
@@ -374,15 +332,10 @@ body {
   font-size: 13px;
   cursor: pointer;
   transition: all 0.15s;
-  font-family: 'Inter', sans-serif;
 }
 
 #gallery-btn:hover {
   background: #2a2a2a;
   border-color: #8b5cf6;
   color: #c4b5fd;
-}
-
-#gallery-row {
-  display: none;
 }
